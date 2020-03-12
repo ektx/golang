@@ -1,0 +1,1 @@
+<h1>Child Template</h1>
