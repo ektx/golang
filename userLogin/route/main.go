@@ -73,6 +73,9 @@ func apiMid2 (c * gin.Context) {
 }
 
 func Router() *gin.Engine  {
+	// 默认使用了 Logger() 与 Recovery() 中中间件
+	// Logger 用于将日志写入 gin.DefaultWriter,即使配制了 GIN_MODE=release
+	// Recovery 用于防止服务器崩溃，当有错误时，会使用500响应
 	r := gin.Default()
 	
 	// 定义静态文件地址
