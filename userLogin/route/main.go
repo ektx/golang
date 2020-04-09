@@ -34,10 +34,15 @@ func hasLogin (status bool) gin.HandlerFunc {
 	}
 }
 
+// 中间件设置值 demo
 func computedTime (c * gin.Context) {
 	log.Println("进入时间中间件")
 	// 开始时间
 	start := time.Now()
+	
+	// 添加值
+	c.Set("name", "小布丁")
+	
 	c.Next()
 	end := time.Since(start)
 	
@@ -45,9 +50,19 @@ func computedTime (c * gin.Context) {
 	log.Println("结束时间中间件")
 }
 
+// 中间件取值 Demo
 func apiMid (c * gin.Context) {
 	log.Println("进入API 中间件1")
+	// 取值
+	name, has := c.Get("name")
+	
+	if !has {
+		name = "宝宝"
+	}
+	
 	c.Next()
+	
+	log.Println("中间件传值为：", name)
 	log.Println("结束 API 中间件1")
 }
 

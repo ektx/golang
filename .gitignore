@@ -57,3 +57,4 @@ local.properties
 docs/
 
 .vbook
+userLogin/go_build_main_go
