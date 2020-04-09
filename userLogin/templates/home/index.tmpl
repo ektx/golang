@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/assets/layout.css">
   </head>
   <body>
-    {{ .title }}
+    <h1>{{ .title }}</h1>
     {{ .link | safe }}
 
     <nav>
@@ -19,6 +19,14 @@
       <a href="/bindUser?username=小布丁&password=123456">ShouldBind</a>
       <h3>重定向</h3>
       <a href="/baidu">baidu</a>
+      <a href="/redirectEventA">重定向事件</a>
+      <h3>404</h3>
+      <a href="/ksalksl">404</a>
+
+      <a href="/hasLogin">可以通过的中间件</a>
+      <a href="/notLogin">不可以通过的中间件</a>
+
+      <a href="/api/book">api组件</a>
     </nav>
   </body>
   </html>

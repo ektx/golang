@@ -1,9 +1,11 @@
 package route
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 	"userLogin/route/upload"
 	
 	"github.com/gin-gonic/gin"
@@ -15,6 +17,44 @@ func Home(c *gin.Context) {
 		"title": "hello Gin!",
 		"link":  "<a href=/user/ektx>User</a>",
 	})
+}
+
+// 自定义中间件
+func hasLogin (status bool) gin.HandlerFunc {
+	// 连接数据库等相关操作
+	
+	// 返回一个闭包
+	return func(c * gin.Context) {
+		log.Print("来到了中间件")
+		if (status) {
+			c.Next()
+		} else {
+			c.Abort()
+		}
+	}
+}
+
+func computedTime (c * gin.Context) {
+	log.Println("进入时间中间件")
+	// 开始时间
+	start := time.Now()
+	c.Next()
+	end := time.Since(start)
+	
+	fmt.Printf("耗时：%v\n ", end)
+	log.Println("结束时间中间件")
+}
+
+func apiMid (c * gin.Context) {
+	log.Println("进入API 中间件1")
+	c.Next()
+	log.Println("结束 API 中间件1")
+}
+
+func apiMid2 (c * gin.Context) {
+	log.Println("进入API 中间件2")
+	c.Next()
+	log.Println("结束 API 中间件2")
 }
 
 func Router() *gin.Engine  {
@@ -35,17 +75,45 @@ func Router() *gin.Engine  {
 	// 加载模板文件
 	r.LoadHTMLGlob("templates/**/*")
 	
+	// 全局注册中间件
+	r.Use(computedTime)
+	
 	r.GET("/", Home) // 主页
 	r.GET("/baidu", RedirectBaidu) // 重定向到百度
-	r.GET("/redirectEventA", RedirectEventA) // 重定向事件A
 	r.GET("/login", Login) // 登录页面
+	
+	// 使用单个中间件 通过
+	r.GET("/hasLogin", hasLogin(true), func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "OK",
+		})
+	})
+	
+	// 使用单个中间件 不通过
+	r.GET("/notLogin", hasLogin(false), func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "OK",
+		})
+	})
 	r.GET("/bindUser", ShouldBind)
 	r.POST("/login", PostLogin) // 登录请求
 	r.POST("/upload", upload.Upload) // 单文件上传
 	r.POST("/uploads", upload.Uploads) // 多文件上传
 	r.POST("/bindUser", ShouldBind)
 	
+	// 重定向事件A
+	r.GET("/redirectEventA", func (c *gin.Context) {
+		//跳转到事件B
+		c.Request.URL.Path = "/redirectEventB"
+		r.HandleContext(c)
+	})
 	
+	// 重定向事件B
+	r.GET("/redirectEventB", func (c *gin.Context)  {
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "来至事件 B",
+		})
+	})
 	// 路由参数 param in path
 	// https://gin-gonic.com/zh-cn/docs/examples/param-in-path/
 	r.GET("/user/:name", func(c *gin.Context) {
@@ -127,22 +195,32 @@ func Router() *gin.Engine  {
 		})
 	})
 	
-	r.POST("api/book", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "提交成功",
+	// 组添加中间件方式一
+	apiGroup := r.Group("/api", apiMid)
+	// 组添加中间件方式二
+	apiGroup.Use(apiMid2)
+	{
+		apiGroup.POST("/book", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "提交成功",
+			})
 		})
-	})
+		
+		apiGroup.GET("/book", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"message": "Get book",
+			})
+		})
+		
+		apiGroup.DELETE("/book", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"message": "Delete book",
+			})
+		})
+	}
 	
-	r.GET("api/book", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Get book",
-		})
-	})
-	
-	r.DELETE("api/book", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Delete book",
-		})
+	r.NoRoute(func(c *gin.Context) {
+		c.HTML(http.StatusNotFound, "404/index.tmpl", gin.H{})
 	})
 	
 	return r
