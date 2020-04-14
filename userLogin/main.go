@@ -3,8 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
+	"userLogin/common"
 	"userLogin/route"
 	
 	"github.com/jinzhu/gorm"
@@ -39,20 +39,9 @@ func (User) TableName() string {
 }
 
 func main() {
-	// 连接 mysql
-	// https://gorm.io/zh_CN/docs/connecting_to_the_database.html
-	db, err := gorm.Open("mysql", "root:123456@/test?charset=utf8mb4&parseTime=True&loc=Local")
-	
-	if err != nil {
-		log.Println(err)
-		panic(err)
-	} else {
-		log.Println("连接数据库成功")
-	}
+	db := common.InitDB()
 	// 延迟关闭数据库
 	defer db.Close()
-	// 禁用表的复数形式
-	// db.SingularTable(true)
 	
 	// 创建表与结构体自动迁移功能
 	// 结构体的字段变化会自动更新相关的表
@@ -64,9 +53,9 @@ func main() {
 	db.Table("my_test_table").CreateTable(&User{})
 	
 	// 测试 创建一个数据
-	//u1 := UserInfo{ID: 1, Name: "小布丁2", Age: 1, Gender: "男"}
+	u1 := UserInfo{ID: 1, Name: "小布丁2", Age: 1, Gender: "男"}
 	// save data
-	//db.Create(&u1)
+	db.Create(&u1)
 	
 	// 查询功能
 	var u UserInfo
@@ -77,7 +66,12 @@ func main() {
 	db.Model(&u).Update("name", "小布丁")
 	
 	// 删除
-	db.Delete(&u)
+	//db.Delete(&u)
+	
+	// 查询所有数据
+	var users []UserInfo
+	db.Debug().Find(&users)//.Count(&count)
+	fmt.Printf("all users: %#v\n", users)
 
 	// 创建一个默认路由
 	r := route.Router()
