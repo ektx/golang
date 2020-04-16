@@ -2,7 +2,9 @@ package common
 
 import (
   "github.com/jinzhu/gorm"
+  _ "github.com/jinzhu/gorm/dialects/mysql"
   "log"
+  "userLogin/model"
 )
 
 var DB * gorm.DB
@@ -23,6 +25,12 @@ func InitDB() * gorm.DB  {
   // db.SingularTable(true)
   
   DB = db
+  
+  // user_infos 表创建表与结构体自动迁移功能
+  // 结构体的字段变化会自动更新相关的表
+  db.AutoMigrate(&model.UserInfo{})
+  // my_user 通过函数自定义表名
+  db.AutoMigrate(&model.User{})
   
   return db
 }
