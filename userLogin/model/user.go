@@ -29,7 +29,7 @@ func (User) TableName() string {
 // 定义一个用户结构体
 type UserInfo struct {
   ID 			uint
-  Name 		string
-  Gender 	string
-  Age 		int
+  Name 		string  `json:"name" form:"name" gorm:"unique;not null" binding:"required"`
+  Gender 	string  `json:"gender" gorm:"not null" binding:"required"`
+  Age 		int     `json:"age" gorm:"not null" binding:"required,gte=0,lte=130"`
 }
