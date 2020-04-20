@@ -13,6 +13,8 @@ func main() {
 	db := common.InitDB()
 	// 延迟关闭数据库
 	defer db.Close()
+	// 运行表与结构体
+	model.AutoMigrateModels()
 	
 	// 使用 User 结构体创建一个名为 my_test_tabel 表
 	db.Table("my_test_table").CreateTable(&model.User{})

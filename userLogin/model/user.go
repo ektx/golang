@@ -4,6 +4,7 @@ import (
   "database/sql"
   "github.com/jinzhu/gorm"
   "time"
+  "userLogin/common"
 )
 
 // 定义一个模型
@@ -32,4 +33,16 @@ type UserInfo struct {
   Name 		string  `json:"name" form:"name" gorm:"unique;not null" binding:"required"`
   Gender 	string  `json:"gender" gorm:"not null" binding:"required"`
   Age 		int     `json:"age" gorm:"not null" binding:"required,gte=0,lte=130"`
+}
+
+
+func SaveUserInfo (user *UserInfo) (err error) {
+  db := common.GetDB()
+  
+  // 保存
+  if err := db.Debug().Create(&user).Error; err != nil {
+    return err
+  }
+  
+  return
 }
