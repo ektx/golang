@@ -1,4 +1,4 @@
-/assets/
+/static/
 /tmp
 *.sum
 go_build_main_go
