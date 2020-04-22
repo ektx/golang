@@ -21,20 +21,22 @@ func addUser(c *gin.Context) {
   
   // 绑定值
   if err := c.ShouldBind(&u); err != nil {
-    fmt.Printf("%#v", err)
+    fmt.Printf("%#v\n", err)
     var msg = ""
     
     for _, err := range err.(validator.ValidationErrors) {
-      fmt.Println(err.Namespace())
-      fmt.Println(err.Field())
-      fmt.Println(err.StructNamespace())
-      fmt.Println(err.StructField())
-      fmt.Println(err.Tag())
-      fmt.Println(err.ActualTag())
-      fmt.Println(err.Kind())
-      fmt.Println(err.Type())
-      fmt.Println(err.Value())
-      fmt.Println(err.Param())
+      // 验证结构体字段
+      // eg：Namespaceerr: UserInfo.Age
+      fmt.Println("Namespaceerr:", err.Namespace())
+      fmt.Println("Field:", err.Field())            // 结构体验证字段 eg: Age
+      fmt.Println("StructNamespace:", err.StructNamespace())  // 结构体字段，同Namespace
+      fmt.Println("StructField:", err.StructField())      // 结构体错误 tag
+      fmt.Println("Tag:", err.Tag())              // 同上
+      fmt.Println("ActualTag:", err.ActualTag())        // 结构体类型,eg: string
+      fmt.Println("Kind:", err.Kind())             // 同上
+      fmt.Println("Type:", err.Type())             // 错误值
+      fmt.Println("Value:",err.Value())            // 正确值
+      fmt.Println("Param:", err.Param())
   
       switch err.StructField() {
         case "Name": msg = "用户名不能为空"

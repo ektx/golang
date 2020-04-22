@@ -15,6 +15,7 @@ func InitDB() * gorm.DB  {
   
   if err != nil {
     log.Println(err)
+    log.Println("数据库连接失败")
     panic(err)
   } else {
     log.Println("连接数据库成功")
