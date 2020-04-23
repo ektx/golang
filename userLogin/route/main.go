@@ -118,7 +118,9 @@ func Router() *gin.Engine  {
 	r.POST("/upload", upload.Upload) // 单文件上传
 	r.POST("/uploads", upload.Uploads) // 多文件上传
 	r.POST("/bindUser", ShouldBind)
+	
 	r.POST("/api/addUser", addUser)			// 添加用户
+	r.GET("/api/getUsers", GetUsers)   	// 获取用户
 	
 	// 重定向事件A
 	r.GET("/redirectEventA", func (c *gin.Context) {
