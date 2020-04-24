@@ -56,7 +56,6 @@ type FilterList struct {
 
 func GetUsers () (list []FilterList, count int, err error) {
   db := common.GetDB()
-  //var count int
 
   if err := db.
     Debug().
