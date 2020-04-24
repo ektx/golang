@@ -47,10 +47,21 @@ func SaveUserInfo (user *UserInfo) (err error) {
   return
 }
 
-func GetUsers () (list []UserInfo, err error) {
+// 过滤条件
+type FilterList struct {
+  Name string `json:"name"`
+  Gender string `json:"gender"`
+  Age int `json:"age"`
+}
+
+func GetUsers () (list []FilterList, err error) {
   db := common.GetDB()
-  
-  if err := db.Debug().Find(&list).Error; err != nil {
+
+  if err := db.
+    Debug().
+    Table("user_infos").
+    Select("name, age, gender").
+    Scan(&list).Error; err != nil {
     return list, err
   }
   
