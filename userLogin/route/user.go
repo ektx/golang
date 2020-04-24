@@ -66,7 +66,7 @@ func addUser(c *gin.Context) {
 }
 
 func GetUsers(c * gin.Context) {
-  list, err := model.GetUsers()
+  list, count, err := model.GetUsers()
   
   if err != nil {
     c.JSON(http.StatusOK, gin.H{
@@ -75,7 +75,10 @@ func GetUsers(c * gin.Context) {
   } else {
     c.JSON(http.StatusOK, gin.H{
       "msg": "查询成功",
-      "data": list,
+      "data": gin.H{
+        "list": list,
+        "total": count,
+      },
     })
   }
 }

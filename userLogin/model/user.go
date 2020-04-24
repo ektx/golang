@@ -54,15 +54,18 @@ type FilterList struct {
   Age int `json:"age"`
 }
 
-func GetUsers () (list []FilterList, err error) {
+func GetUsers () (list []FilterList, count int, err error) {
   db := common.GetDB()
+  //var count int
 
   if err := db.
     Debug().
     Table("user_infos").
     Select("name, age, gender").
-    Scan(&list).Error; err != nil {
-    return list, err
+    Scan(&list).
+    Count(&count).
+    Error; err != nil {
+    return list, count, err
   }
   
   return
